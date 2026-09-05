@@ -7,23 +7,19 @@ Deployment process, infrastructure, and production operations for AI agents.
 
 ## Deployment Platform
 
-**Platform:** [Where it deploys - e.g., "Vercel" / "Railway" / "AWS EC2" / "VPS"]
+**Platform:** GitHub Pages
 
-**Type:** [e.g., "Serverless" / "Container (Docker)" / "Static hosting" / "Browser extension"]
+**Type:** Static hosting (client-side only, no server)
 
-**Why this platform:** [One reason - e.g., "Free tier covers our needs" / "Need full server control"]
+**Why this platform:** Free, deploys directly from GitHub Actions with no external account or secrets needed. Chosen over Cloudflare Pages/Netlify/Vercel specifically because Cloudflare's IP ranges are prone to collateral blocking in Russia, and the target audience is the ru-segment - reliability there matters more than PR-preview convenience.
 
 ---
 
 ## Access Information
 
-**SSH Access:**
-- Production: `ssh user@server-ip` [e.g., `ssh root@123.45.67.89`]
-- Staging: [if applicable]
+**SSH Access:** Not applicable - static hosting, no server to access. All operations go through GitHub Actions per project policy (no direct server access except emergency debugging, which doesn't apply here).
 
-> If not configured, agent will request: server address, username, and port.
-
-**Credentials location:** [e.g., "GitHub Actions secrets" / "1Password vault"]
+**Credentials location:** GitHub Actions secrets (none required yet; will hold Android signing keys once Google Play packaging starts).
 
 ---
 
@@ -31,48 +27,47 @@ Deployment process, infrastructure, and production operations for AI agents.
 
 **See:** [.env.example](../../.env.example) in project root
 
-[List all required environment variables with their purpose - NO VALUES]
-
-<!-- Keep .env.example updated. Comment each variable's purpose in that file. -->
+None required currently - no API keys, no backend.
 
 ---
 
 ## Deployment Triggers
 
-**Production:** [e.g., "Auto-deploy on push to `main` after tests pass"]
+**Production:** Auto-deploy to GitHub Pages on push to `main`, after CI tests pass (to be set up during the base-infrastructure phase: Vite build + Vitest, then publish `dist/`).
 
-**Staging:** [e.g., "Auto-deploy on push to `dev`"]
+**Staging:** Not configured - `dev` branch changes are built/tested locally before merging to `main`.
 
-**Preview:** [e.g., "Auto-deploy for every PR" / "Not configured"]
+**Preview:** Not configured (see platform rationale above - traded off for RU accessibility).
 
 ---
 
 ## Pre-Deploy Checklist
 
-[Only critical manual steps - if fully automated, write "Fully automated via CI"]
-
-- [ ] [e.g., "Run `npm run migrate:prod` if schema changed"]
-- [ ] [e.g., "Verify env vars set in platform dashboard"]
+Fully automated via CI once the pipeline is set up (build + test + publish on push to `main`). No manual steps expected for this static, backend-less game.
 
 ---
 
 ## Rollback Procedure
 
-**Platform rollback:** [e.g., "Vercel: 'Redeploy' on previous deployment" / "VPS: `git checkout <prev-commit>`"]
+**Platform rollback:** Revert the merge commit on `main`; CI redeploys the previous build automatically.
 
-**Manual steps if needed:** [e.g., "If DB migration broke: run rollback SQL from /migrations/rollbacks/"]
+**Manual steps if needed:** None - no database/migrations to roll back.
 
-**Approximate time:** [e.g., "~2 minutes" / "~10 minutes with DB rollback"]
+**Approximate time:** ~2-5 minutes (CI build + publish time).
 
 ---
 
 ## Environments
 
-**Production:** [URL] - Deploys from `main` branch
+**Production:** GitHub Pages URL (e.g. `https://hasico.github.io/teddy-and-the-magic-theatre/`), enabled once the deploy workflow is set up - deploys from `main` branch.
 
-**Staging:** [URL] - Deploys from `dev` branch
+No staging environment for v1.
 
-<!-- If single environment, only list Production -->
+---
+
+## Planned: Android / Google Play
+
+Not started. Later phase (after Acts I-III, Prologue and Finale are complete): package the same Vite/Phaser build with Capacitor into an Android app for Google Play. Requires reviewing Google Play's "Designed for Families" policy (ads/data-collection restrictions for children's apps) before submission, and a signing key stored in GitHub Actions secrets.
 
 ---
 
@@ -85,27 +80,25 @@ If no monitoring configured, write: "Logs output to stdout only. No error tracki
 
 ### Logging
 
-**Where:** [e.g., "stdout (Docker logs)" / "CloudWatch" / "Local files"]
-**Format:** [e.g., "JSON structured" / "Plain text" / "Default framework logging"]
+**Where:** Browser console only - static client-side game, no server-side logs.
+**Format:** Default browser console output.
 
 ### Error Tracking
 
-**Tool:** [e.g., "Sentry" / "Rollbar" / "None"]
-**Config:** [e.g., "SENTRY_DSN in .env" / "Not configured"]
+**Tool:** None configured.
+**Config:** Not configured.
 
 ### Health Checks
 
-**Endpoint:** [e.g., "GET /health" / "None"]
-**Checks:** [e.g., "DB connectivity, external API status" / "N/A"]
-
-<!-- Optional sections below — delete if not applicable -->
+**Endpoint:** None - static site, no backend to check.
+**Checks:** N/A.
 
 ### Metrics
 
-**Analytics:** [e.g., "Google Analytics" / "Vercel Analytics" / "None"]
-**Key metrics:** [e.g., "API response time, error rate" / "N/A"]
+**Analytics:** None configured.
+**Key metrics:** N/A.
 
 ### Alerts
 
-**Tool:** [e.g., "Sentry email alerts" / "PagerDuty" / "None"]
-**Rules:** [e.g., "Error rate > 5%" / "N/A"]
+**Tool:** None.
+**Rules:** N/A.

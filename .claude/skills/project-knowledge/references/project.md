@@ -7,39 +7,35 @@ This file provides high-level project overview for AI agents. Helps agents under
 
 ## Project Overview
 
-**Name:** [Project Name]
+**Name:** Teddy and the Magic Theatre (working title of the game: "Teddy's Way Home")
 
-**Description:** [One-line description of what this project does]
+**Description:** A short narrative browser-based 2D game for children where a lost knitted teddy bear stages three magical theatre performances to find his way back to his owner.
 
-[Optional: 1-2 additional sentences with key context]
+Full game design is documented in [docs/game-passport.md](../../../docs/game-passport.md) — treat it as the source of truth for narrative, characters, scope and pacing. This file summarizes it for quick agent context.
 
 ---
 
 ## Target Audience
 
-**Primary users:** [Who uses this - e.g., "Developers building CLI tools", "Small business owners"]
+**Primary users:** Children aged 8-10, playing independently on PC or phone.
 
-**Use case:** [Why they need it - e.g., "Need to automate deployment workflows", "Want to track inventory without complex software"]
+**Use case:** A calm, self-directed first "own" gaming experience — no reading-heavy text, no keyboard, no precise reflexes, no fail states. Mouse or touch only.
 
 ---
 
 ## Core Problem
 
-[What pain point are we solving? 2-3 sentences describing the problem this project addresses]
-
-[Example format: "Currently users have to [manual process]. This is slow/error-prone/expensive because [reason]. We solve this by [solution approach]."]
+Most games aimed at this age either require adult help (reading, complex controls) or use fail/punishment mechanics (timers, health, bad endings) that frustrate young children. Teddy and the Magic Theatre solves this by making every interaction low-stakes: any decoration choice produces a fun outcome, never a wrong one, so a child can play the whole ~45-minute story solo without getting stuck or scared.
 
 ---
 
 ## Key Features
 
-[List 3-5 core capabilities - only the most important ones. Details belong in project backlog.]
-
-- **[Feature 1 name]** - [What it does in 1 sentence]
-- **[Feature 2 name]** - [What it does in 1 sentence]
-- **[Feature 3 name]** - [What it does in 1 sentence]
-- **[Feature 4 name]** - [What it does in 1 sentence]
-- **[Feature 5 name]** - [What it does in 1 sentence]
+- **Three magical theatre acts** - Player redresses and populates three themed stage sets (Lilac Garden, Candy Castle, Princess's Bedroom), each ending in a short staged performance based on their choices.
+- **No-fail decoration gameplay** - Every valid prop placement produces a distinct, comedic outcome instead of a "correct/incorrect" result.
+- **Memory comics** - After each act, a short 2-4 frame comic reveals part of the backstory between Teddy and his owner Angelina.
+- **Comic-overlay effects** - Hand-drawn-style motion lines, emotion icons, sound-effect text and freeze-frame captions layered live over the puppet-theatre scene during play.
+- **Optional meme easter eggs** - Four non-blocking, skippable comic moments (idle animation, POV freeze-frames, two joke characters, a dancing-kitten trio) that don't affect progression.
 
 <!--
 Feature backlog, detailed roadmap, and development phases live in the project backlog
@@ -50,10 +46,13 @@ Feature backlog, detailed roadmap, and development phases live in the project ba
 
 ## Out of Scope
 
-[What we explicitly DON'T do - helps agents avoid scope creep]
+Full v1 scope boundaries are in [docs/game-passport.md](../../../docs/game-passport.md) section 12. Summary:
 
-- [Thing 1 we don't support - e.g., "No mobile app version"]
-- [Thing 2 we don't support - e.g., "No multi-tenant support"]
-- [Thing 3 we don't support - e.g., "No real-time collaboration features"]
+- No platforming/physics, combat, health or lives.
+- No timers or punishment for slow play; no fail states or bad endings.
+- No free-roam large levels or complex inventory.
+- No branching plot, full voice acting, or multiplayer.
+- No level editor; no additional worlds beyond the three acts for v1.
+- No backend/accounts - progress is stored locally per device.
 
-<!-- Add more items as needed -->
+**Not yet decided (raised during planning, not committed):** additional worlds, full voice acting, multiplayer, level editor — these were mentioned as unformed future ideas, not backlog items.
