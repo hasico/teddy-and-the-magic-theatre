@@ -12,134 +12,91 @@ UX standards and user-facing communication for AI agents. Helps agents write con
 
 ## Interface Language
 
-**Primary language:** [e.g., "Russian" / "English" / "Both (i18n support)"]
+**Primary language:** Russian
 
-**Localization:** [e.g., "Single language - no i18n" / "Multi-language via `/locales/`" / "Using react-i18next"]
-
-<!-- If multilingual, specify which language is default and where translation files are -->
+**Localization:** Single language - no i18n for v1. All in-game text (Ogonyok's lines, memory captions, comic sound-effects) is written directly in Russian.
 
 ---
 
 ## Tone of Voice
 
-**Overall tone:** [Choose: Formal / Professional / Casual / Friendly / Technical / Simple]
+**Overall tone:** Playful, warm, gentle - never scary, never rushed, never punishing.
 
-**Writing style:** [Describe in detail - not just keywords. E.g., "Short, direct sentences. Active voice. Focus on user actions. Avoid corporate jargon and passive constructions. Technical accuracy without overwhelming with details."]
+**Writing style:** Very short sentences a child of 8-10 can read alone at a glance. No long explanations, no tutorial-style instruction text - the game teaches through Ogonyok's brief reactions and visual cues, not paragraphs. Mistakes are never framed as failure ("wrong") - every outcome is described as a funny surprise.
 
 **Voice characteristics:**
-- **Formality level:** [e.g., "Professional but approachable - use 'you' but avoid slang" / "Casual and friendly - contractions OK, conversational"]
-- **Emotional tone:** [e.g., "Warm and supportive" / "Neutral and factual" / "Confident and authoritative"]
-- **Technical complexity:** [e.g., "Explain technical concepts simply" / "Assume technical audience" / "Balance - simple for common tasks, detailed for advanced"]
-- **Humor:** [e.g., "Light humor in empty states, serious in errors" / "No humor - strictly professional" / "Playful but not distracting"]
+- **Formality level:** Informal, childlike - short exclamations and simple statements, not full formal sentences.
+- **Emotional tone:** Warm and playful for Teddy and Ogonyok; energetic and a little self-important (comedic, trying to sound more grown-up than she is) for Angelina in comic/memory text.
+- **Technical complexity:** None - no settings jargon, no technical terms exposed to the player.
+- **Humor:** Central to the tone - unexpected/funny reactions are the reward for experimentation, per game-passport.md section 2 ("mistakes become a reason for a new funny scene, not a punishment").
 
 **Example phrases by context:**
 
-- ✅ Good: ""
-
-- ❌ Avoid: ""
+- ✅ Good: "Огонёк: Ой! Так тоже смешно получилось!"
+- ❌ Avoid: "Неверная комбинация декораций. Попробуйте снова."
 
 
 ---
 
 ## Domain Glossary
 
-[**Instructions - remove this section after filling:**
-
-**When to add terms:**
-- Domain-specific concepts that appear frequently in UI (e.g., in fintech: "wallet" vs "account" vs "balance")
-- Terms that might be confused with similar concepts (e.g., "order" vs "booking" vs "reservation")
-- Product-specific jargon that needs consistent naming across all text
-
-**What NOT to add:**
-- Generic UI words (button, form, page, menu, settings, etc.)
-- Self-explanatory terms that don't need clarification
-- One-time mentions or obvious concepts
-
-**Important:** Empty glossary is perfectly fine. Only add terms when real naming conflicts or domain complexity emerges during development.
-
-**Format:**
-- **[Term]** — [What it means specifically in your product context]
-  *UI example: "[Where/how users see it]"*
-
-]
-
-<!-- Start empty. Fill only when domain terminology actually appears and needs consistency -->
+- **Акт (Act)** — one of the three magical theatre worlds (Lilac Garden, Candy Castle, Princess's Bedroom). Not "level" or "stage" in code/content naming.
+- **Ленточка (the Ribbon)** — Teddy's red ribbon; the visual/emotional progress symbol that glows brighter after each completed Act and reveals a memory. Not "progress bar."
+- **Огонёк (Ogonyok)** — the golden light-guide character. Keep this name consistently; don't rename to generic "guide" or "helper" in code/content.
+- **Комикс-воспоминание (memory comic)** — the 2-4 frame flat-style comic shown after each Act, revealing backstory with Angelina. Distinct from the live comic-overlay effects used during gameplay.
+- **Комиксный слой (comic-overlay layer)** — the flat, hand-drawn-style effects (motion lines, emotion icons, sound-effect text, POV freeze-frames) rendered on top of the 3D-styled puppet-theatre scene during play.
+- **Мемная пасхалка (meme easter egg)** — one of the four optional, skippable comedic moments (Six-Seven idle animation, POV freeze-frames, two Candy Castle joke characters, dancing kittens). Never blocks progression.
 
 ---
 
 ## Text Patterns
 
-[How we write specific UI elements - keep examples SHORT]
+No traditional forms/buttons/error-messages - this is a game with no accounts, no validation, no failure states. The only recurring UI text elements:
 
-### Buttons
-**Style:** [e.g., "Action verb + object: 'Save changes', 'Create account'" / "Single verb: 'Save', 'Cancel'"]
+### POV Freeze-Frame Captions
+**Style:** Always starts with "POV:", one short absurd/funny clause describing the surprising outcome.
 
-**Examples:**
-- Primary actions: [e.g., "Save changes", "Create workspace"]
-- Secondary actions: [e.g., "Cancel", "Go back"]
-- Destructive actions: [e.g., "Delete account", "Remove workspace"]
+**Examples:** "POV: ты поставил трон на батут", "POV: улитка получила главную роль"
 
-### Error Messages
-**Format:** [e.g., "Problem + what to do: 'Invalid email. Please check and try again.'" / "Just state the problem: 'Invalid email address'"]
+### Sound-Effect Text (comic overlay)
+**Style:** Single onomatopoeic word, all caps, with an exclamation mark.
 
-**Examples:**
-- Validation: [e.g., "Email is required"]
-- Auth errors: [e.g., "Incorrect password. Try again or reset password."]
-- System errors: [e.g., "Something went wrong. Please try again."]
+**Examples:** "БАМ!", "ПУФ!", "ДЗЫНЬ!"
 
-### Success Messages
-**Format:** [e.g., "Confirmation + next step" / "Just confirmation"]
-
-**Examples:**
-- [e.g., "Account created! Check your email to verify."]
-- [e.g., "Changes saved successfully."]
-
-### Loading States
-**Style:** [e.g., "Present continuous: 'Loading...', 'Saving changes...'" / "Please wait: 'Please wait...'"]
-
-**Examples:**
-- [e.g., "Loading workspace..."]
-- [e.g., "Saving..."]
+### Ogonyok's reaction lines
+**Style:** One short exclamation or observation, in character (mischievous, sometimes gives imperfect advice). Never explains mechanics in instructional language.
 
 ---
 
 ## Copy Reference
 
-[If you have a separate file with all UI texts, link it here]
-
-**Location:** [e.g., "See `/src/copy/ui-messages.ts` for all user-facing text" / "All text in `/locales/en.json`"]
-
-<!-- If no separate file, write: "N/A - UI copy defined inline in components" -->
+**Location:** Not yet created - in-game text will live in a dedicated content/dialogue file, to be established during Act I implementation.
 
 ---
 
 ## Design System
 
-[Visual design specifications - only if custom design exists]
+**Design files:** No Figma/design files. Concept art lives locally in `/artbook` on each contributor's machine (gitignored - not versioned, reference only, not shipped assets).
 
-**Design files:** [e.g., "Figma: [link]" / "No design files - using default [framework] components"]
+**Art direction:** Handmade puppet-theatre look - visible yarn texture, felt, stitching, buttons, cardboard and wood construction (per game-passport.md section 9). Early concept renders came out too polished/glossy - like a saccharine, hyper-real CGI product shot - rather than a warm, slightly imperfect handcrafted toy. Direction going forward: keep Teddy's warm caramel-brown knitted look, the red ribbon, and Ogonyok's golden winged-light design, but favor a more tactile, hand-made, less glossy rendering treatment.
 
 **Color palette:**
-- Primary: [e.g., "#0066FF" / "Default Material Blue"]
-- Secondary: [e.g., "#FF6B00" / "N/A"]
-- Error/Warning/Success: [e.g., "#FF0000, #FFA500, #00CC00" / "Standard"]
+- Theatre base: burgundy, dark wood, muted blue, gold light
+- Teddy's accent: red ribbon
+- Act I - Lilac Garden: lilac, violet, green, night blue
+- Act II - Candy Castle: pink, caramel, cream, mint
+- Act III - Princess's Bedroom: sky blue, cream, powder pink, gold
 
 **Key components:**
-- [e.g., "Custom Button with rounded corners + shadow"]
-- [e.g., "Modal with blur backdrop"]
-- [e.g., "Using standard [Chakra UI / Material UI / Ant Design] components"]
-
-<!-- Only include if there are custom visual elements. If using standard framework components, write: "Standard [framework name] components with default theme" -->
+- Puppet-theatre 3D-styled scene (base visual layer) with a contrasting flat 2D comic-overlay layer on top (motion lines, emotion icons, sound-effect text, POV freeze-frames) - see game-passport.md section 9.
+- Comic-overlay assets are a small reusable set (8-12 emotion icons, 6-8 motion/flash lines, 5-6 sound-effect words, 3 freeze-frame frames, 1 page-transition), not bespoke per event.
 
 ---
 
 ## Accessibility
 
-[Only include if there are specific requirements beyond standard practices]
-
 **Requirements:**
-- [e.g., "All buttons must have aria-label if icon-only"]
-- [e.g., "Forms must have explicit <label> elements, no placeholder-only"]
-- [e.g., "Color contrast ratio minimum 4.5:1"]
-
-<!-- If following standard a11y practices with no special requirements, write: "Follow standard WCAG 2.1 AA guidelines" -->
+- No reading required to understand core actions - meaning must come through visual/iconographic cues and Ogonyok's brief reactions, since the audience is 8-10 year olds playing solo.
+- All interactive objects must be clearly readable and reachable by touch on both PC and mobile screen sizes (per game-passport.md section 3).
+- No time pressure and no fail state - nothing may punish a slow or "wrong" action.
+- All important actions/outcomes must be understandable with sound off (visual language must carry meaning on its own, per game-passport.md section 10).

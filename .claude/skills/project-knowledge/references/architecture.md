@@ -7,69 +7,59 @@ Technical architecture overview for AI agents. Helps agents understand HOW the s
 
 ## Tech Stack
 
-**Frontend:** [Framework/Library - e.g., "React 18 with Vite"]
-- **Why:** [One reason - e.g., "Fast dev experience with HMR, widely supported"]
+**Game engine:** Phaser 3 with TypeScript, bundled by Vite
+- **Why:** Purpose-built 2D browser game framework. Its Scene system maps directly onto the game's structure (Prologue / Act I / Act II / Act III / Finale), it unifies mouse and touch input, and its tween system covers both the variable staging outcomes and the comic-overlay effects without a second rendering layer.
 
-**Backend:** [Framework - e.g., "Express.js" / "FastAPI" / "None - static site"]
-- **Why:** [One reason - e.g., "Minimal overhead for REST API, large ecosystem"]
+**Backend:** None - fully client-side game
+- **Why:** No accounts, no multiplayer, no server-authoritative state needed (single-player, local progress only per game-passport.md).
 
-**Database:** [Database type - e.g., "PostgreSQL" / "MongoDB" / "None"]
-- **Why:** [One reason - e.g., "ACID transactions needed for payments" / "N/A"]
+**Database:** None - progress saved to browser `localStorage`
+- **Why:** Single-player, single-device save is sufficient for v1; no cross-device sync requirement.
 
-<!-- Add other stack components if needed: Mobile, Desktop, etc -->
+**Mobile packaging (planned, later phase):** Capacitor, wrapping the same Vite/Phaser web build into a native Android app for Google Play
+- **Why:** Reuses the existing codebase instead of a native rewrite; bundles assets offline for app-store distribution. See deployment.md for release-process details and timing.
 
 ---
 
 ## Project Structure
 
-[Brief map of where things live - helps agents find relevant code quickly]
-
 ```
 /
 ├── src/
-│   ├── components/     [UI components]
-│   ├── api/           [API routes/endpoints]
-│   ├── utils/         [Helper functions]
-│   ├── config/        [Configuration files]
-│   └── types/         [TypeScript types/interfaces]
-├── tests/             [Test files]
-└── .claude/           [AI agent context]
+│   ├── scenes/         [Phaser Scene classes: Boot, Preload, Prologue, Act1LilacGarden, Act2CandyCastle, Act3PrincessBedroom, Finale]
+│   ├── objects/        [Reusable game objects: decoration props, Teddy, Ogonyok, Angelina]
+│   ├── comics/         [Comic-overlay effect system: motion lines, emotion icons, sound-effect text, POV freeze-frame captions]
+│   ├── save/           [localStorage save/load logic]
+│   ├── config/         [Phaser game config, constants]
+│   └── types/          [TypeScript types/interfaces]
+├── public/assets/      [Art, audio, comic assets]
+├── docs/               [Game design docs - game-passport.md is source of truth for content]
+├── tests/              [Vitest unit tests]
+└── .claude/            [AI agent context]
 ```
-
-[Adjust structure to match your project - keep it simple]
 
 ---
 
 ## Key Dependencies
 
-[List ONLY critical packages that agents need to know about - not every dependency]
-
 **Critical packages:**
-- `[package-name]` - [Why we use it - e.g., "Authentication - handles JWT tokens"]
-- `[package-name]` - [Why we use it - e.g., "Stripe SDK - payment processing"]
-- `[package-name]` - [Why we use it - e.g., "Zod - runtime validation for API inputs"]
+- `phaser` - core 2D game engine: scene management, sprite rendering, tweens, input, audio
+- `vite` - dev server and production bundler
+- `vitest` - unit tests for game logic (decoration-combination outcomes, save/progress state), not for visual/animation correctness
 
-<!-- Add 3-5 most important dependencies. Skip obvious ones like React, Express basics -->
+<!-- Add @capacitor/core and @capacitor/android here once the Android packaging phase starts -->
 
 ---
 
 ## External Integrations
 
-[Third-party services/APIs this project connects to]
-
-**[Service name - e.g., "Stripe"]**
-- **Purpose:** [What we use it for - e.g., "Payment processing for subscriptions"]
-- **Auth method:** [How we authenticate - e.g., "API key in STRIPE_SECRET_KEY env var"]
-
-<!-- If no external integrations, write: "None - no external API dependencies" -->
+None currently - no external API dependencies. Google Play Console will be a distribution channel in a later phase, not a runtime integration.
 
 ---
 
 ## Data Flow
 
-[Describe in 2-4 sentences how data moves through the system. Focus on the main flow, not edge cases.]
-
-<!-- Example: "User submits form → Frontend validates with Zod → POST to /api/users → Backend validates again → Save to PostgreSQL → Return user object → Update UI." -->
+Player interacts with the active Phaser Scene (placing decorations/props) → scene logic resolves the combination against a small per-act outcome table → triggers the matching animation/tween sequence plus any comic-overlay effect → on scene completion, the player's choices are written to `localStorage` → the Finale scene reads all saved choices to assemble the closing performance.
 
 ---
 
@@ -80,40 +70,24 @@ This section describes database/storage architecture.
 SCALING HINT: If this section grows beyond ~80 lines, extract to a separate references/database.md and link from here.
 -->
 
-**Database:** [Type - e.g., "PostgreSQL 15" / "MongoDB" / "Not applicable"]
+**Database:** Not applicable - no server-side database. State lives in browser `localStorage` as a single JSON save blob.
 
-### Main Tables/Collections
+### Save Data (localStorage)
 
-[List key tables/collections and their relationships - keep it brief]
-
-**[table_name or CollectionName]**
-- Purpose: [What this stores - e.g., "User accounts and profiles"]
-- Key fields: [List 3-5 most important fields]
-- Relationships: [Links to other tables - e.g., "users.id → orders.user_id"]
-
-<!-- Add main tables. Skip junction/helper tables unless critical -->
+**Purpose:** Stores game progress so a session can resume after closing the browser/app.
+- Key fields (exact shape to be finalized during Act I implementation): save-format version, per-act completion flag, chosen decoration/prop per key choice slot, unlocked memory-comic flags, ribbon glow stage.
+- Relationships: Finale scene reads the full blob to assemble the closing performance from all three acts' choices.
 
 ### Key Constraints
 
-[Only constraints that would cause errors if violated]
-
-- **Unique constraints:** [e.g., "users.email must be unique"]
-- **Foreign keys:** [e.g., "orders.user_id → users.id (ON DELETE CASCADE)"]
-- **Required fields:** [e.g., "users: email, password_hash are NOT NULL"]
+- Save format must include a version field from the start, so future acts/content changes can migrate or reset old saves without crashing.
 
 ### Migration Strategy
 
-**Tool:** [e.g., "Prisma Migrate" / "Alembic" / "Django migrations" / "Manual SQL scripts"]
+**Tool:** None (manual versioning of the save blob shape)
 
-**Process:** [Brief - e.g., "Run `npm run migrate` before deploy. Migrations in /prisma/migrations/. Never edit old migrations."]
+**Process:** Bump the save-format version field when the save shape changes; on load, unreadable/old-version saves fall back to a fresh save rather than erroring (no punishment for the player).
 
 ### Sensitive Data
 
-[Fields containing PII or secrets - important for security]
-
-**PII fields:**
-- [table.field - e.g., "users.email"]
-- [table.field - e.g., "users.phone_number"]
-
-<!-- If no sensitive data, write "No PII stored" -->
-<!-- If using alternative storage (localStorage, file system, Chrome Storage API), describe it here instead of tables -->
+No PII stored - no accounts, no personal data collected. Save data contains only in-game choices.

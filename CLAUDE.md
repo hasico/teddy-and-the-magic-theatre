@@ -1,6 +1,6 @@
-# Project: [PROJECT NAME]
+# Project: Teddy and the Magic Theatre
 
-> **[ONE SENTENCE - WHAT THIS PROJECT IS ABOUT]**
+> **A short narrative browser-based 2D game for children where a lost knitted teddy bear stages three magical theatre performances to find his way home.**
 
 ---
 
