@@ -33,7 +33,6 @@ Technical architecture overview for AI agents. Helps agents understand HOW the s
 │   ├── config/         [Phaser game config, constants]
 │   └── types/          [TypeScript types/interfaces]
 ├── public/assets/      [Art, audio, comic assets]
-├── artbook/            [Concept art / style reference, not shipped assets]
 ├── docs/               [Game design docs - game-passport.md is source of truth for content]
 ├── tests/              [Vitest unit tests]
 └── .claude/            [AI agent context]

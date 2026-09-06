@@ -76,9 +76,9 @@ No traditional forms/buttons/error-messages - this is a game with no accounts, n
 
 ## Design System
 
-**Design files:** No Figma/design files. Concept art lives in `/artbook` (reference only, not shipped assets).
+**Design files:** No Figma/design files. Concept art lives locally in `/artbook` on each contributor's machine (gitignored - not versioned, reference only, not shipped assets).
 
-**Art direction:** Handmade puppet-theatre look - visible yarn texture, felt, stitching, buttons, cardboard and wood construction (per game-passport.md section 9). Early concept renders (`/artbook`) came out too polished/glossy - like a saccharine, hyper-real CGI product shot - rather than a warm, slightly imperfect handcrafted toy. Direction going forward: keep Teddy's warm caramel-brown knitted look, the red ribbon, and Ogonyok's golden winged-light design, but favor a more tactile, hand-made, less glossy rendering treatment.
+**Art direction:** Handmade puppet-theatre look - visible yarn texture, felt, stitching, buttons, cardboard and wood construction (per game-passport.md section 9). Early concept renders came out too polished/glossy - like a saccharine, hyper-real CGI product shot - rather than a warm, slightly imperfect handcrafted toy. Direction going forward: keep Teddy's warm caramel-brown knitted look, the red ribbon, and Ogonyok's golden winged-light design, but favor a more tactile, hand-made, less glossy rendering treatment.
 
 **Color palette:**
 - Theatre base: burgundy, dark wood, muted blue, gold light

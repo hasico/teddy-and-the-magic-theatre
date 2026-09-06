@@ -50,3 +50,6 @@ htmlcov/
 tmp/
 temp/
 *.tmp
+
+# Concept art / design reference - not versioned (heavy binaries, iterated often)
+artbook/
