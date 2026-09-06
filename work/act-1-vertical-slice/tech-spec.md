@@ -215,10 +215,16 @@ size: L
 
 ### Decision 28: Единый механизм блокировки ввода — `InputGate` [TECHNICAL]
 
-**Decision:** один Phaser-свободный класс `InputGate` (`src/logic/inputGate.ts`) с `lock()`/`unlock()`/`isLocked`, один экземпляр на сцену, создаётся в `Act1LilacGarden.create()` и передаётся всем трём контроллерам и колбэку `orientationGuard`. Каждый обработчик, который должен игнорировать ввод во время перехода (драг, клик по пульту, клик по кнопке подсказки), первой строкой проверяет `inputGate.isLocked` и выходит без побочных эффектов, если `true`.
-**Rationale:** user-spec «Ограничения» прямо требует «единое правило для всех переходов, а не отдельный случай для каждого» (доводка, возврат зависимых предметов, постановка, переход к экрану продолжить/переставить). Реализация блокировки отдельно в каждом контроллере/задаче нарушила бы именно это требование и создала бы риск, что один из переходов забудут заблокировать.
-**Alternatives considered:** отдельный булев флаг в каждом контроллере — отклонено, это ровно «отдельный случай для каждого перехода», прямо запрещённый user-spec; глобальная Phaser-переменная `scene.input.enabled = false` — отклонено, отключает вообще весь ввод сцены (включая, например, drag уже начатого объекта, у которого нужно доиграть анимацию отмены), тогда как `InputGate` — это семантический флаг, который каждый обработчик проверяет сам, а не аппаратное отключение инпута.
-**Supports:** user-spec «Ограничения» (единое правило блокировки ввода), AC «во время проигрывания постановки и других некликабельных переходов… игровой ввод не обрабатывается».
+**Decision:** один Phaser-свободный класс `InputGate` (`src/logic/inputGate.ts`) с `lock()`/`unlock()`/`isLocked`, один экземпляр на сцену, создаётся в `Act1LilacGarden.create()` и передаётся всем трём контроллерам и колбэку `orientationGuard`. Каждый обработчик, который должен игнорировать ввод во время перехода (драг, клик по пульту, клик по кнопке подсказки), первой строкой проверяет `inputGate.isLocked` и выходит без побочных эффектов, если `true`. Полный список точек, где `lock()`/`unlock()` вызываются (не только проверяются) — все пять некликабельных переходов из user-spec «Ограничения»:
+
+1. Доводка предмета к точке (Task 7, `PropDragController`) — `lock()` на `dragend` при попадании в радиус, `unlock()` по завершении settle-tween (`settleTweenMs`, Decision 19).
+2. Возврат котов в ящик (Task 8, `PropDragController`) — `lock()` при переносе куста после установки котов, `unlock()` по завершении tween возврата (`catsReturnTweenMs`, Decision 19).
+3. Проигрывание постановки (Task 10, `OutcomeController`) — `lock()` по клику на пульт, `unlock()` по завершении последнего beat’а `OutcomeDef`.
+4. Переход к экрану «продолжить»/«переставить» (Task 11, `Act1LilacGarden`) — `lock()` на время самого перехода экрана, `unlock()` когда новый экран интерактивен.
+5. Флип ориентации в портрет (Task 11, через `orientationGuard`) — `lock()` немедленно при обнаружении портрета (плюс отмена активного драга), `unlock()` при возврате в landscape.
+   **Rationale:** user-spec «Ограничения» прямо требует «единое правило для всех переходов, а не отдельный случай для каждого» (доводка, возврат зависимых предметов, постановка, переход к экрану продолжить/переставить). Реализация блокировки отдельно в каждом контроллере/задаче нарушила бы именно это требование и создала бы риск, что один из переходов забудут заблокировать.
+   **Alternatives considered:** отдельный булев флаг в каждом контроллере — отклонено, это ровно «отдельный случай для каждого перехода», прямо запрещённый user-spec; глобальная Phaser-переменная `scene.input.enabled = false` — отклонено, отключает вообще весь ввод сцены (включая, например, drag уже начатого объекта, у которого нужно доиграть анимацию отмены), тогда как `InputGate` — это семантический флаг, который каждый обработчик проверяет сам, а не аппаратное отключение инпута.
+   **Supports:** user-spec «Ограничения» (единое правило блокировки ввода), AC «во время проигрывания постановки и других некликабельных переходов… игровой ввод не обрабатывается».
 
 ### Decision 29: Внутренняя декомпозиция сцены на контроллеры [TECHNICAL]
 
@@ -368,11 +374,11 @@ interface SaveData {
 - `isSceneReady`: `false` при пустом `placements` и при частично заполненном (не хватает одного обязательного предмета); `true`, когда все обязательные предметы (включая котов, если схема выбрана) на местах.
 - `nextHintTarget`: возвращает основную (не `isHidden`) точку следующего невыставленного обязательного предмета; `null`, если ставить нечего.
 - `canDragKeyProp(catsPlaced)`: `false` пока коты не установлены, `true` после.
-- `shouldFireAutoHint(idleMs, isHeld, delayMs)`: `false`, пока `isHeld === true`, независимо от `idleMs`; `true`, когда `idleMs >= delayMs` и `isHeld === false`.
+- `shouldFireAutoHint(idleMs, isHeld, delayMs)`: `false`, пока `isHeld === true`, независимо от `idleMs`; `false`, когда `isHeld === false`, но `idleMs < delayMs` (ещё не пора — граничный случай, отдельный от «предмет в руках»); `true`, когда `idleMs >= delayMs` и `isHeld === false`.
 - `resetForReposition`: очищает только `keyPropId` и `dependentPropIds` в `placements`, остальные позиции не трогает.
 - `InputGate`: стартует разблокированным; `lock()`/`unlock()` корректно переключают `isLocked`.
-- Config sanity (`ACT1_CONFIG`): каждая `DropPoint.snapRadius === 70`; предметы по умолчанию имеют `hitboxSize` не меньше 100×100; `autoHintDelayMs === 12000`, `hintButtonRevealMs === 1250`, `hiddenSignalDelayMs === 400`, `hiddenMagnetDelayMs === 700`; порядок `props` совпадает с Decision 4; `tall-bush` имеет ровно 2 точки, одна с `isHidden: true`; `cats` — ровно 2 точки (main/hidden), один `PropDef`.
-- `saveAct1Result`: пишет корректный `SaveData` под ключом `teddy-save`; не бросает исключение при недоступном `localStorage` (мок `localStorage.setItem`, кидающий `DOMException`).
+- Config sanity (`ACT1_CONFIG`): каждая `DropPoint.snapRadius === 70`; предметы по умолчанию имеют `hitboxSize` не меньше 100×100; `autoHintDelayMs === 12000`, `hintButtonRevealMs === 1250`, `hiddenSignalDelayMs === 400`, `hiddenMagnetDelayMs === 700`, `settleTweenMs === 150`, `catsReturnTweenMs === 300`; порядок `props` совпадает с Decision 4; `tall-bush` имеет ровно 2 точки, одна с `isHidden: true`; `cats` — ровно 2 точки (main/hidden), один `PropDef`; `environment.main.reactions` и `.hidden.reactions` совпадают с числами Decision 27 (`swingRotationDeg`, `swingCycleMs`, `scooter.headlightMs`/`shiftPx`/`shiftMs`) — это единственная автоматизированная проверка числового контракта Decision 27, тween-анимация самих реакций дальше проверяется только вручную (Task 10 Verify-user).
+- `saveAct1Result('hidden')`: вызывает `localStorage.setItem('teddy-save', ...)` с JSON, парсящимся в `{ version: SAVE_FORMAT_VERSION, acts: { act1: { completed: true, scheme: 'hidden' } } }`; не бросает исключение при недоступном `localStorage` (мок `localStorage.setItem`, кидающий `DOMException`).
 - `defaultSave`: возвращает `version: SAVE_FORMAT_VERSION`, пустой `acts`.
 - Обновлённый `tests/unit/gameConfig.test.ts`: `gameConfig.scene` длиной 3 и содержит именно `[Boot, Preload, Act1LilacGarden]` (проверка по идентичности классов, не только по длине массива).
 
@@ -428,6 +434,7 @@ None. Все числовые константы и структурные ре�
 - [ ] Ни один тест не поднимает `Phaser.Game`/жизненный цикл Scene — только `src/logic/*` и `src/save/index.ts` импортируются в тестах.
 - [ ] `sharp` присутствует только в `devDependencies`, с зафиксированной точной версией, и не влияет на размер продакшен-бандла.
 - [ ] Каждый обработчик ввода (драг, клик по пульту, клик по кнопке подсказки) первой строкой проверяет `InputGate.isLocked` — нет отдельной, независимой реализации блокировки в каком-либо из трёх контроллеров.
+- [ ] Все пять переходов из Decision 28 (доводка, возврат котов, постановка, экран продолжить/переставить, флип ориентации) реально вызывают `inputGate.lock()`/`unlock()` — не только проверяют `isLocked`, но и взводят/снимают его.
 
 ## Implementation Tasks
 
@@ -497,7 +504,7 @@ Waves 2, 3, 4 и 6 идут по одной задаче каждая, пото�
 
 #### Task 7: Drag & snap core interaction
 
-- **Description:** `PropDragController.ts` — `dragstart`/`drag`/`dragend` на каждом обычном предмете через `findSnapTarget`/`activePointsFor`/`InputGate` из Wave 1: магнит без дребезга у границы радиуса, доводка+сжатие+крошки+`sfx.playSnap()` (общий эффект подтверждения, который позже переиспользует и скрытая точка куста в Task 8, без повторной реализации), возврат в ящик при промахе, `disableInteractive()` после установки.
+- **Description:** `PropDragController.ts` — `dragstart`/`drag`/`dragend` на каждом обычном предмете через `findSnapTarget`/`activePointsFor`/`InputGate` из Wave 1: магнит без дребезга у границы радиуса, `inputGate.lock()` на попадание в радиус → доводка+сжатие+крошки+`sfx.playSnap()` → `inputGate.unlock()` (общий эффект подтверждения, который позже переиспользует и скрытая точка куста в Task 8, без повторной реализации — см. Decision 28, пункт 1), возврат в ящик при промахе, `disableInteractive()` после установки.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
 - **Verify-user:** перетащить каждый обычный предмет в браузере, убедиться в отсутствии мерцания у границы радиуса и в соответствии таймингов доводки/промаха (Decision 19)
@@ -508,7 +515,7 @@ Waves 2, 3, 4 и 6 идут по одной задаче каждая, пото�
 
 #### Task 8: Key prop special behavior (высокий куст)
 
-- **Description:** В `PropDragController.ts` — hold-to-drag для куста (`time.delayedCall`, порог из Decision 2, гейтится через `canDragKeyProp`), сигнал скрытой точки и порог активации магнита к ней (тайминги из Decision 18); установка в скрытую точку переиспользует тот же эффект подтверждения, что и Task 7 (без отдельной реализации). Перенос куста после установки котов возвращает котов в ящик и сбрасывает `activeScheme`.
+- **Description:** В `PropDragController.ts` — hold-to-drag для куста (`time.delayedCall`, порог из Decision 2, гейтится через `canDragKeyProp`), сигнал скрытой точки и порог активации магнита к ней (тайминги из Decision 18); установка в скрытую точку переиспользует тот же `inputGate.lock()/unlock()`-обёрнутый эффект подтверждения, что и Task 7 (без отдельной реализации). Перенос куста после установки котов — `inputGate.lock()` → tween возврата котов в ящик → `inputGate.unlock()` (Decision 28, пункт 2) — и сбрасывает `activeScheme`.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
 - **Verify-user:** короткий тап ничего не делает, удержание+драг переносит куст, скрытая точка даёт свой тактильный сигнал до магнита, повторный перенос после котов отправляет их в ящик
@@ -519,7 +526,7 @@ Waves 2, 3, 4 и 6 идут по одной задаче каждая, пото�
 
 #### Task 9: Idle auto-hint & hint button
 
-- **Description:** `HintController.ts` — таймер автоподсказки (Decision 20: 12с, сброс при установке, пауза пока предмет в руках, через `shouldFireAutoHint`), летящий Огонёк только к основной точке (`nextHintTarget`); постоянная кнопка подсказки (подпрыгивание + частичная подсказка, Decision 20: 1.25с), неактивна во время драга (`InputGate`) или когда ставить нечего.
+- **Description:** `HintController.ts` — таймер автоподсказки (тайминг из Decision 20, сброс при установке, пауза пока предмет в руках, через `shouldFireAutoHint`), летящий Огонёк только к основной точке (`nextHintTarget`); постоянная кнопка подсказки (подпрыгивание + частичная подсказка, тайминг из Decision 20), неактивна во время драга (`InputGate`) или когда ставить нечего.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
 - **Verify-user:** оставить предмет неустановленным дольше 12с и убедиться в единичной автоподсказке; нажать кнопку подсказки в каждом «неактивном» состоянии и убедиться, что она не срабатывает
@@ -531,7 +538,7 @@ Waves 2, 3, 4 и 6 идут по одной задаче каждая, пото�
 - **Description:** `OutcomeController.ts` — пульт загорается при `isSceneReady`; клик (`InputGate.lock()`) проигрывает плейсхолдер-постановку выбранной схемы (все биты читаются без звука) и синхронную реакцию окружения по числовому контракту (Decision 27), по завершении — `InputGate.unlock()`.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
-- **Verify-user:** пройти обе постановки целиком, убедиться, что их нельзя прервать вводом и что они читаются с выключенным звуком
+- **Verify-user:** пройти обе постановки целиком, убедиться, что их нельзя прервать вводом и что они читаются с выключенным звуком; отдельно проверить числа Decision 27 — качеля заметно слабее качается в основной постановке (~2°), чем в скрытой (~6°); самокат не реагирует в основной и в скрытой даёт короткую вспышку фары + звук «пик-пик» + заметный сдвиг к лавочке
 - **Files to modify:** `src/scenes/act1/OutcomeController.ts`
 - **Files to read:** `src/config/act1.ts`, `src/logic/inputGate.ts`, `src/audio/sfx.ts`, `src/scenes/Act1LilacGarden.ts`, `docs/act-01-storyboard-playground.md` (§8, §8C)
 
@@ -539,7 +546,7 @@ Waves 2, 3, 4 и 6 идут по одной задаче каждая, пото�
 
 #### Task 11: Continue/reposition flow & orientation guard integration
 
-- **Description:** В `Act1LilacGarden.ts` — экраны «продолжить» (`saveAct1Result` + текстовая заглушка) и «переставить» (`resetForReposition`, повтор без повторного показа подсказок, зачёт той же схемы при той же точке); подключить `orientationGuard` из Task 4 к `InputGate` и к отмене активного драга в `PropDragController`; подтвердить, что перезагрузка страницы всегда стартует с чистого листа.
+- **Description:** В `Act1LilacGarden.ts` — экраны «продолжить» (`saveAct1Result` + текстовая заглушка) и «переставить» (`resetForReposition`, повтор без повторного показа подсказок, зачёт той же схемы при той же точке), сам переход экрана оборачивается `inputGate.lock()/unlock()` (Decision 28, пункт 4); подключить `orientationGuard` из Task 4 так, чтобы обнаружение портрета сразу вызывало `inputGate.lock()` и отмену активного драга в `PropDragController`, а возврат в landscape — `inputGate.unlock()` (Decision 28, пункт 5); подтвердить, что перезагрузка страницы всегда стартует с чистого листа.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
 - **Verify-user:** полный ручной проход цикла «переставить» (включая повтор в ту же скрытую точку) и флип ориентации посреди драга
