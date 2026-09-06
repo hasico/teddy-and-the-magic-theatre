@@ -1,6 +1,7 @@
 # Deployment & Operations
 
 ## Purpose
+
 Deployment process, infrastructure, and production operations for AI agents.
 
 ---
@@ -33,7 +34,9 @@ None required currently - no API keys, no backend.
 
 ## Deployment Triggers
 
-**Production:** Auto-deploy to GitHub Pages on push to `main`, after CI tests pass (to be set up during the base-infrastructure phase: Vite build + Vitest, then publish `dist/`).
+**Production:** `.github/workflows/deploy.yml` runs on push to `main`: `npm ci` → `npm test` → `npm run build` → publish `dist/` to GitHub Pages via `actions/deploy-pages`. Requires GitHub Pages source set to "GitHub Actions" in repo settings (Settings → Pages).
+
+**CI (build+test):** `.github/workflows/ci.yml` runs on push/PR to `dev` and `main`: gitleaks secret scan → `npm ci` → `npm run lint` → `npm run build` → `npm test`.
 
 **Staging:** Not configured - `dev` branch changes are built/tested locally before merging to `main`.
 

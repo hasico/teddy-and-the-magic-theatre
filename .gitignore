@@ -25,6 +25,8 @@ dist/
 build/
 .next/
 out/
+.vite/
+*.local
 
 # IDE
 .vscode/

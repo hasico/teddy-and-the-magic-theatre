@@ -1,0 +1,7 @@
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact -v || exit 1
+else
+  echo "WARNING: gitleaks not found on PATH - secret scan skipped. Install: https://github.com/gitleaks/gitleaks#installing" >&2
+fi
+
+npx lint-staged
