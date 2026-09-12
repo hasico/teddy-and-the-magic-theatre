@@ -22,6 +22,7 @@ function canonicalInputPath(path, label) {
   } catch (error) {
     throw new Error(
       `cannot resolve ${label} input ${absolutePath}: ${error.message}`,
+      { cause: error },
     );
   }
 }
@@ -32,9 +33,9 @@ function createOutputTarget(path) {
     mkdirSync(outDir);
   } catch (error) {
     if (error.code === "EEXIST") {
-      throw new Error(`output target already exists: ${outDir}`);
+      throw new Error(`output target already exists: ${outDir}`, { cause: error });
     }
-    throw new Error(`cannot create output target ${outDir}: ${error.message}`);
+    throw new Error(`cannot create output target ${outDir}: ${error.message}`, { cause: error });
   }
   return outDir;
 }

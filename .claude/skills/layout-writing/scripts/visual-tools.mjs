@@ -136,6 +136,7 @@ export function loadPlaywright(projectRoot) {
     throw new Error(
       `Playwright is not available from ${root}. Install it in the target project ` +
         `and run its browser install command. Cause: ${error.message}`,
+      { cause: error },
     );
   }
 }
