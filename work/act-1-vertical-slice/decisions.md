@@ -64,3 +64,4 @@ _Round 3 (after fixes):_
 - `npx tsc --noEmit` → clean
 - `npm run lint` → clean
 - `npm run build` → OK
+- Manual browser check (`npm run preview`, user playtest) → OK: full cycle in landscape, both schemes, reposition, restart from the end screen, orientation stub; found and fixed off-screen choice-screen buttons (d7803ba)
