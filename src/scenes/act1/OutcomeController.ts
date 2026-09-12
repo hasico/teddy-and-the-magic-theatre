@@ -460,7 +460,10 @@ export class OutcomeController {
         .text(0, 0, label, { fontFamily: 'sans-serif', fontSize: '24px', color: '#f0eaff' })
         .setOrigin(0.5);
       const button = this.scene.add
-        .container(x, 60, [bg, text])
+        // World coordinates: the panel sits at (640, 360), so its button row
+        // is (640 ± 130, 420). A bare (x, 60) would pin the buttons to the
+        // top-left corner — «Продолжить» fully off-screen.
+        .container(640 + x, 420, [bg, text])
         .setDepth(22)
         .setInteractive({
           hitArea: new Phaser.Geom.Rectangle(-110, -30, 220, 60),
