@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Boot } from '../scenes/Boot';
 import { Preload } from '../scenes/Preload';
+import { Act1LilacGarden } from '../scenes/Act1LilacGarden';
 
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
@@ -15,5 +16,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Boot, Preload],
+  scene: [Boot, Preload, Act1LilacGarden],
 };

@@ -1,0 +1,37 @@
+# Procedural Skills
+
+Procedural skills define a way of working or a sequence of actions. Describe the process in the
+form and detail the task requires; phases, checkpoints, and explicit state are useful only when
+they protect a real dependency.
+
+## Explicit Dependent Steps
+
+State the actions and ordering that change execution. Do not turn ordinary conversation into a
+router or state machine, and do not add phases merely to format a sequence.
+
+### When a Checkpoint Earns Its Cost
+
+Add a checkpoint only when it validates one of these before dependent work continues:
+
+- a substantive user decision or approval;
+- authorization for an external, destructive, or irreversible action;
+- a semantic result whose defect could remain hidden while the next phase proceeds incorrectly.
+
+State the decision, authorization, or hidden defect it protects and the downstream action that
+depends on it. If neither can be named concretely, omit the checkpoint. File or directory
+existence, a status just written, completion of listed steps, and an already visible command
+result do not justify checkpoints by themselves.
+
+## Outcome Verification
+
+Add a verification step only when it checks a result not already established by the action that
+produced it. Do not replay the workflow or duplicate checks whose results are already known.
+
+## Subagent Verification for Critical Operations
+
+Use a verification subagent when fresh isolated judgment materially reduces the risk of a
+critical result. Invoke it where its evidence is needed rather than adding a separate ceremonial
+phase. Apply the reviewer contract and orchestrator responsibilities from [agents.md](agents.md).
+
+An ordinary conversational workflow needs no router, persistent state, or checkpoints. A workflow
+with a dependent external or irreversible action may justify phases and an approval checkpoint.

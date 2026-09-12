@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { GAME_HEIGHT, GAME_WIDTH } from '../config/gameConfig';
+import { ACT1_SCENE_KEY } from './Act1LilacGarden';
 
 export class Preload extends Phaser.Scene {
   constructor() {
@@ -7,16 +7,15 @@ export class Preload extends Phaser.Scene {
   }
 
   preload(): void {
-    // Real assets are loaded here once Act scenes are implemented (see docs/act-01-storyboard-playground.md).
+    // The only file assets of the slice: the two character sprites prepared
+    // from the artbook sheets (tech-spec Decision 9). BASE_URL keeps the
+    // paths working under the GitHub Pages base path (Decision 6).
+    const base = import.meta.env.BASE_URL;
+    this.load.image('teddy', `${base}assets/teddy.png`);
+    this.load.image('ogonek', `${base}assets/ogonek.png`);
   }
 
   create(): void {
-    this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'Teddy and the Magic Theatre', {
-        fontFamily: 'sans-serif',
-        fontSize: '32px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
+    this.scene.start(ACT1_SCENE_KEY);
   }
 }
