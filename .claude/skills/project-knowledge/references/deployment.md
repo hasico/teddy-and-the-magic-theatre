@@ -62,7 +62,7 @@ Fully automated via CI once the pipeline is set up (build + test + publish on pu
 
 ## Environments
 
-**Production:** GitHub Pages URL (e.g. `https://hasico.github.io/teddy-and-the-magic-theatre/`), enabled once the deploy workflow is set up - deploys from `main` branch.
+**Production:** `https://hasico.github.io/teddy-and-the-magic-theatre/` (live since 2026-09-12, Act I vertical slice) - deploys from `main` branch. The game is served under the `/teddy-and-the-magic-theatre/` subpath; Vite's `base` handles it, so all asset loads must go through `import.meta.env.BASE_URL` (see patterns.md).
 
 No staging environment for v1.
 

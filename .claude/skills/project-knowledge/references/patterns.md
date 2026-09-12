@@ -7,17 +7,13 @@ For universal coding standards, see `~/.claude/skills/code-writing/references/un
 
 ## Project-Specific Code Patterns
 
-<!--
-ADD PROJECT-SPECIFIC PATTERNS HERE:
+Patterns below are demonstrated Act I code; follow for Acts II-III.
 
-1. Framework conventions (React hooks, Django patterns, FastAPI dependencies, etc.)
-2. Domain naming (Order/Cart/Product vs Purchase/Basket/Item)
-3. External integration patterns (Stripe webhooks, API retry logic, etc.)
-4. Database patterns (transactions, query optimization, caching)
-
-Only add patterns SPECIFIC to this project. Don't add generic advice.
-Empty section is fine for simple projects.
--->
+1. **Pure logic / Phaser glue split.** All gameplay decisions (snap targeting, scheme resolution, scene readiness, hint targets, hidden-point dwell states) live in `src/logic/` as pure functions with no Phaser imports - unit-testable under Vitest/jsdom. Phaser scenes and controllers orchestrate input/tweens/visuals only and are deliberately not unit-tested.
+2. **InputGate counting lock** (`src/logic/inputGate.ts`). Overlapping transitions (settle tween, cats returning, outcome playback, choice/end screens, orientation flips) each take their own lock on one shared gate; gameplay input handlers check `gate.isLocked`. Locks nest; the counter clamps at zero so an extra unlock is harmless.
+3. **Per-act content as data.** Props, drop points, outcomes (caption beats), and environment reactions are declarative config in `src/config/act1.ts`, not scene code. Unit tests pin the design-space constants (1280×720 canvas, snapRadius 70, hitboxes ≥100×100 design px, timing constants) so accidental UX drift fails CI.
+4. **Assets under the Pages base path.** Load with `${import.meta.env.BASE_URL}assets/...` - never root-absolute `/assets/`, which 404s on GitHub Pages' subpath.
+5. **Placeholder-first visuals.** Props are Graphics-drawn shapes with explicit hit areas until real art lands; sprite prep from concept art is a dev-time script (scripts/prepare-sprites.mjs), never runtime code.
 
 ---
 
@@ -59,13 +55,13 @@ Generic testing methodology lives in ~/.claude/skills/test-master/.
 
 ### Test Infrastructure
 
-Vitest for unit tests (game logic: decoration-combination outcomes, save/progress state). No test database - state is a localStorage JSON blob, mocked in tests. No E2E framework set up yet.
+Vitest for unit tests (pure logic in `src/logic/`, per-act config pins, save/progress state, SFX and orientation-guard helpers). Scene/controller Phaser glue is intentionally not unit-tested. No test database - state is a localStorage JSON blob, mocked in tests. No E2E framework set up yet.
 
 Importing `phaser` under Vitest needs `vite.config.ts`'s `test.environment: 'jsdom'` + `tests/setup.ts` (`vitest-canvas-mock`, since jsdom's canvas has no real `getContext`) + `phaser3spectorjs` as a devDependency (Phaser's raw source unconditionally requires it due to an unguarded `typeof WEBGL_DEBUG` check meant for bundler dead-code elimination, not runtime use). Any test that imports a scene or the game config needs this setup already in place.
 
 ### Agent Verification Methods
 
-None discovered yet - will be added as testing approaches emerge during development (e.g., once the `run` skill is used to launch and check the Phaser build in a browser).
+**Build smoke check (proven in Act I):** `npm run build && npm run preview`, then curl the page and each `assets/*.png` for HTTP 200. Use `preview`, never `dev` - the dev server serves from the site root and hides base-path asset bugs that only appear on GitHub Pages' subpath. Gameplay feel (magnet, timings, hint readability) is verified by the user in a browser, per the act's user-spec «Как проверить» section.
 
 ### User Verification Methods
 

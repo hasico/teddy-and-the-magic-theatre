@@ -6,6 +6,7 @@ For projects with minimal UI, add a brief "UX" section in patterns.md instead.
 -->
 
 ## Purpose
+
 UX standards and user-facing communication for AI agents. Helps agents write consistent UI text and follow design patterns.
 
 ---
@@ -25,6 +26,7 @@ UX standards and user-facing communication for AI agents. Helps agents write con
 **Writing style:** Very short sentences a child of 8-10 can read alone at a glance. No long explanations, no tutorial-style instruction text - the game teaches through Ogonyok's brief reactions and visual cues, not paragraphs. Mistakes are never framed as failure ("wrong") - every outcome is described as a funny surprise.
 
 **Voice characteristics:**
+
 - **Formality level:** Informal, childlike - short exclamations and simple statements, not full formal sentences.
 - **Emotional tone:** Warm and playful for Teddy and Ogonyok; energetic and a little self-important (comedic, trying to sound more grown-up than she is) for Angelina in comic/memory text.
 - **Technical complexity:** None - no settings jargon, no technical terms exposed to the player.
@@ -34,7 +36,6 @@ UX standards and user-facing communication for AI agents. Helps agents write con
 
 - ✅ Good: "Огонёк: Ой! Так тоже смешно получилось!"
 - ❌ Avoid: "Неверная комбинация декораций. Попробуйте снова."
-
 
 ---
 
@@ -54,23 +55,26 @@ UX standards and user-facing communication for AI agents. Helps agents write con
 No traditional forms/buttons/error-messages - this is a game with no accounts, no validation, no failure states. The only recurring UI text elements:
 
 ### POV Freeze-Frame Captions
+
 **Style:** Always starts with "POV:", one short absurd/funny clause describing the surprising outcome.
 
 **Examples:** "POV: ты поставил трон на батут", "POV: улитка получила главную роль"
 
 ### Sound-Effect Text (comic overlay)
+
 **Style:** Single onomatopoeic word, all caps, with an exclamation mark.
 
 **Examples:** "БАМ!", "ПУФ!", "ДЗЫНЬ!"
 
 ### Ogonyok's reaction lines
+
 **Style:** One short exclamation or observation, in character (mischievous, sometimes gives imperfect advice). Never explains mechanics in instructional language.
 
 ---
 
 ## Copy Reference
 
-**Location:** Not yet created - in-game text will live in a dedicated content/dialogue file, to be established during Act I implementation.
+**Location:** Act I in-game text (outcome caption beats, button labels «Подсказка»/«Продолжить»/«Переставить», orientation stub «Поверни телефон») lives in `src/config/act1.ts` and `src/scenes/act1/` controllers. A dedicated content/dialogue module is still planned once more acts exist.
 
 ---
 
@@ -81,6 +85,7 @@ No traditional forms/buttons/error-messages - this is a game with no accounts, n
 **Art direction:** Handmade puppet-theatre look - visible yarn texture, felt, stitching, buttons, cardboard and wood construction (per game-passport.md section 9). Early concept renders came out too polished/glossy - like a saccharine, hyper-real CGI product shot - rather than a warm, slightly imperfect handcrafted toy. Direction going forward: keep Teddy's warm caramel-brown knitted look, the red ribbon, and Ogonyok's golden winged-light design, but favor a more tactile, hand-made, less glossy rendering treatment.
 
 **Color palette:**
+
 - Theatre base: burgundy, dark wood, muted blue, gold light
 - Teddy's accent: red ribbon
 - Act I - Lilac Garden: lilac, violet, green, night blue
@@ -88,6 +93,7 @@ No traditional forms/buttons/error-messages - this is a game with no accounts, n
 - Act III - Princess's Bedroom: sky blue, cream, powder pink, gold
 
 **Key components:**
+
 - Puppet-theatre 3D-styled scene (base visual layer) with a contrasting flat 2D comic-overlay layer on top (motion lines, emotion icons, sound-effect text, POV freeze-frames) - see game-passport.md section 9.
 - Comic-overlay assets are a small reusable set (8-12 emotion icons, 6-8 motion/flash lines, 5-6 sound-effect words, 3 freeze-frame frames, 1 page-transition), not bespoke per event.
 
@@ -96,7 +102,9 @@ No traditional forms/buttons/error-messages - this is a game with no accounts, n
 ## Accessibility
 
 **Requirements:**
+
 - No reading required to understand core actions - meaning must come through visual/iconographic cues and Ogonyok's brief reactions, since the audience is 8-10 year olds playing solo.
-- All interactive objects must be clearly readable and reachable by touch on both PC and mobile screen sizes (per game-passport.md section 3).
+- All interactive objects must be clearly readable and reachable by touch on both PC and mobile screen sizes (per game-passport.md section 3). Concrete rule from Act I: hitboxes ≥100×100 design px on the fixed 1280×720 canvas - that stays ≥~47 CSS px at the minimal supported 600×360 viewport. Unit tests pin this.
+- Landscape-only gameplay: portrait orientation shows a full-screen «Поверни телефон» stub instead of a squeezed scene. Locked autorotate is a documented, unhandled limitation - check the device before handing it to a child.
 - No time pressure and no fail state - nothing may punish a slow or "wrong" action.
 - All important actions/outcomes must be understandable with sound off (visual language must carry meaning on its own, per game-passport.md section 10).
