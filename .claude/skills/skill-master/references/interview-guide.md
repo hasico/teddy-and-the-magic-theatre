@@ -1,0 +1,28 @@
+# Skill Discovery Interview Guide
+
+Use an adaptive interview for a new skill or a major change only when the request leaves a
+material design decision unresolved. Reuse facts already supplied by the user or project; do not
+repeat them as confirmation questions or persist separate interview state.
+
+Ask the smallest number of questions whose answers change the skill. Relevant topics are:
+
+- the outcome the skill must produce;
+- concrete activation intents and real neighboring-skill ambiguity;
+- scope boundaries that affect behavior;
+- examples needed to distinguish the normal path;
+- output contracts or resources that the task actually requires.
+
+Do not ask a fixed questionnaire or proactively solicit generic edge cases and error handling.
+Ask about a failure path only when it follows from an established contract, recurring use, project
+evidence, or a protected security, authorization, data-loss, or irreversible-action boundary.
+If the task, project, or review exposes one concrete rare or unagreed scenario, ask specifically
+whether the skill should support it when support would change behavior, state, contracts, or
+material complexity; do not broaden that question into a generic edge-case survey.
+
+When the user does not know an answer, choose the simplest reversible default if it does not
+materially affect scope or behavior and state the assumption. If the choice changes behavior,
+scope, approach, or authorization, offer concise alternatives and wait for the user's decision.
+
+Stop interviewing as soon as the purpose, routing, scope, and required output are sufficient to
+author the skill. If a material contradiction appears later, stop and discuss that concrete
+deviation with the user rather than designing hypothetical branches in advance.
